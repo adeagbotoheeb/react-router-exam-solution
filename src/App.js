@@ -1,24 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
+import { Routes, Route } from "react-router-dom";
+import Home from "./components/Home";
+import About from "./components/About";
+import Error from "./components/Error";
+import Login from "./components/Login";
+import Products from "./components/Products";
+import { ErrorBoundary } from "react-error-boundary";
+import Fallback from "./components/Fallback";
+import Navbar from "./components/StyledNavbar";
+import FeaturedArticles from "./components/FeaturedArticles";
+import NewArticles from "./components/NewArticles";
+import Profile from "./components/Profile";
+import { AuthProvider } from "./components/auth";
+import RequireAuth from "./components/RequireAuth";
 
 function App() {
+  const errorHandler = (error, errorInfo) => {
+    console.log("Logging", error, errorInfo);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <div className="App">
+        <ErrorBoundary FallbackComponent={Fallback} onError={errorHandler}>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="*" element={<Error />} />
+            <Route path="products" element={<Products />}>
+              <Route path="featured" element={<FeaturedArticles />} />
+              <Route path="new" element={<NewArticles />} />
+            </Route>
+            <Route path="login" element={<Login />} />
+            <Route path="profile" element={<RequireAuth><Profile /></RequireAuth>} />
+          </Routes>
+        </ErrorBoundary>
+      </div>
+    </AuthProvider>
   );
 }
 
